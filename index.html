@@ -4,7 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Feedback Siswa</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com">
+function kirimDataKepuasan(kepuasan) {
+    const formData = {
+        nama: tempFormData.nama,
+        telepon: tempFormData.telepon,
+        sekolah: tempFormData.sekolah,
+        kepuasan: kepuasan,
+        waktu: new Date().toLocaleString('id-ID')
+    };
+
+    fetch("https://script.google.com/macros/s/AKfycbyyJ6Hk54cALs0EnDWhtWPba1bvqOM5wjg-Lzr9XMjhD377xqwz-wIQvsSLdr42VlzaIw/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+    }).then(() => {
+        console.log("Data terkirim ke Google Sheet");
+    }).catch(err => {
+        console.error("Gagal mengirim data:", err);
+    });
+}
+
+puasBtn.addEventListener('click', () => {
+    kirimDataKepuasan("Puas");
+    satisfactionModal.classList.add('hidden');
+    successModal.classList.remove('hidden');
+});
+
+tidakPuasBtn.addEventListener('click', () => {
+    kirimDataKepuasan("Tidak Puas");
+    satisfactionModal.classList.add('hidden');
+    successModal.classList.remove('hidden');
+});
+
+</script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -188,15 +222,7 @@
                 </div>
             </div>
 
-            
-<!-- Tambahan Web App di Dashboard -->
-<div class="mt-8">
-    <iframe src="https://script.google.com/macros/s/AKfycbzqvhHgyaYSYnbvo1ddEW4WoXNSYQ58D11GkeEH5K8dEc-WTgSHUkJHqfBeDtg5F3MX/exec" 
-            style="width:100%; height:600px; border:none;" 
-            title="Google Apps Script Web App"></iframe>
-</div>
-
-<!-- Responses Table -->
+            <!-- Responses Table -->
             <div class="overflow-x-auto -mx-4 sm:mx-0">
                 <div class="inline-block min-w-full align-middle">
                     <table class="min-w-full border-collapse">
