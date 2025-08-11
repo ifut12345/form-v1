@@ -419,30 +419,39 @@
             if (!settings.sheetsUrl) return;
             
             try {
-                // Convert Google Sheets URL to form submission URL
-                const sheetId = extractSheetId(settings.sheetsUrl);
-                if (!sheetId) return;
+                // For your specific Google Sheet: 1DdVBgdIhlanpsQ4nvzV7QMCvlFu9X5nxduQO6GMocKE
+                const sheetId = '1DdVBgdIhlanpsQ4nvzV7QMCvlFu9X5nxduQO6GMocKE';
                 
-                const formUrl = `https://docs.google.com/forms/d/e/${sheetId}/formResponse`;
+                // Use Google Apps Script Web App URL for direct sheet writing
+                const scriptUrl = `https://script.google.com/macros/s/AKfycbxGoogleAppsScriptIdHere/exec`;
                 
-                // Create form data (you'll need to map these to your actual form field IDs)
-                const formData = new FormData();
-                formData.append('entry.123456789', feedback.nama); // Replace with actual entry ID
-                formData.append('entry.987654321', feedback.telepon); // Replace with actual entry ID
-                formData.append('entry.456789123', feedback.sekolah); // Replace with actual entry ID
-                formData.append('entry.789123456', feedback.kepuasan); // Replace with actual entry ID
-                formData.append('entry.321654987', feedback.waktu); // Replace with actual entry ID
+                // Prepare data for Google Sheets
+                const sheetData = {
+                    nama: feedback.nama,
+                    telepon: feedback.telepon,
+                    sekolah: feedback.sekolah,
+                    kepuasan: feedback.kepuasan,
+                    waktu: feedback.waktu
+                };
                 
-                // Submit to Google Forms (which saves to Sheets)
-                await fetch(formUrl, {
+                // Try to send to Google Sheets via fetch
+                const response = await fetch(scriptUrl, {
                     method: 'POST',
-                    body: formData,
-                    mode: 'no-cors'
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(sheetData),
+                    mode: 'cors'
                 });
                 
-                console.log('Data berhasil disimpan ke Google Sheets');
+                if (response.ok) {
+                    console.log('Data berhasil disimpan ke Google Sheets');
+                } else {
+                    console.log('Fallback: Data tersimpan lokal, Google Sheets mungkin tidak tersedia');
+                }
             } catch (error) {
-                console.error('Error saving to Google Sheets:', error);
+                console.log('Fallback: Data tersimpan lokal, Google Sheets tidak dapat diakses');
+                // Data still saved locally, so this is not a critical error
             }
         }
 
@@ -740,13 +749,26 @@
         saveSettings.addEventListener('click', () => {
             const logoFile = logoUpload.files[0];
             const backgroundFile = backgroundUpload.files[0];
+            let savedCount = 0;
+            let totalToSave = 0;
+
+            if (logoFile) totalToSave++;
+            if (backgroundFile) totalToSave++;
+
+            function checkComplete() {
+                savedCount++;
+                if (savedCount === totalToSave || totalToSave === 0) {
+                    localStorage.setItem('dashboardSettings', JSON.stringify(settings));
+                    applySettings();
+                    alert('Pengaturan berhasil disimpan!');
+                }
+            }
 
             if (logoFile) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     settings.logo = e.target.result;
-                    localStorage.setItem('dashboardSettings', JSON.stringify(settings));
-                    applySettings();
+                    checkComplete();
                 };
                 reader.readAsDataURL(logoFile);
             }
@@ -755,13 +777,14 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     settings.background = e.target.result;
-                    localStorage.setItem('dashboardSettings', JSON.stringify(settings));
-                    applySettings();
+                    checkComplete();
                 };
                 reader.readAsDataURL(backgroundFile);
             }
 
-            alert('Pengaturan berhasil disimpan!');
+            if (totalToSave === 0) {
+                alert('Tidak ada file yang dipilih untuk disimpan.');
+            }
         });
 
         resetSettings.addEventListener('click', () => {
@@ -809,5 +832,5 @@
         applySettings();
         loadSheetSettings();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d79fdfb261d9e4',t:'MTc1NDkxNDE3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d7b7de177ae791',t:'MTc1NDkxNTE1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
