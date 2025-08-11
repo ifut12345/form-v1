@@ -1,484 +1,692 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Form Presentasi — SMAK St. Louis 2</title>
-<style>
-  :root{
-    --primary: #013770; /* sesuai permintaan warna dasar */
-    --bg1: #f3f9ff;
-    --bg2: #e6f2ff;
-    --card-bg: #ffffff;
-    --muted:#6c7a89;
-    --maxw:420px;
-    --radius:14px;
-  }
-  html,body{
-    height:100%;margin:0;
-    font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-    -webkit-font-smoothing:antialiased;
-    /* default background - akan menggunakan background.jpg di folder yang sama jika ada */
-    background: linear-gradient(180deg,var(--bg1),var(--bg2));
-  }
-  /* if background.jpg exists and the file is present in the same folder, body inline style will be set by script */
-  .stage{min-height:100%;display:flex;align-items:center;justify-content:center;padding:28px;box-sizing:border-box}
-  .wrap{width:100%;max-width:980px;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
-  .center-card{width:100%;max-width:var(--maxw);background:var(--card-bg);border-radius:var(--radius);box-shadow:0 10px 30px rgba(20,40,80,0.06);padding:22px;text-align:center;box-sizing:border-box;}
-  .logo{display:flex;align-items:center;justify-content:center;margin-bottom:8px;}
-  .logo img{width:96px;height:auto;border-radius:8px;object-fit:contain;}
-  h1{font-size:18px;margin:6px 0 12px;color:#17324a;}
-  p.lead{margin:0 0 14px;color:var(--muted);font-size:13px;}
-  form{display:flex;flex-direction:column;gap:10px;align-items:center;}
-  input[type=text], input[type=tel]{width:100%;padding:11px 12px;border-radius:10px;border:1px solid #e9eef6;font-size:14px;box-sizing:border-box;}
-  .row{display:flex;gap:8px;width:100%;}
-  button.primary{width:100%;padding:11px;border-radius:10px;border:0;background:var(--primary);color:white;font-weight:600;cursor:pointer;}
-  button.secondary{width:100%;padding:11px;border-radius:10px;border:1px solid rgba(20,30,60,0.06);background:white;color:#223;cursor:pointer;}
-  .small{font-size:12px;color:var(--muted);margin-top:8px;}
-  /* popup */
-  .backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,10,20,0.45);z-index:60;}
-  .modal{background:var(--card-bg);padding:18px;border-radius:12px;min-width:px;max-width:92%;box-shadow:0 12px 40px rgba(10,20,40,0.3);transform:scale(0.95) translateY(10px);opacity:0;transition:all 300ms cubic-bezier(0.32, 0.72, 0, 1);width:auto;}
-  .modal.login-modal{width:320px;padding:24px;}
-  .modal.dash-modal{width:min(95vw,1200px);max-height:92vh;overflow:auto;}
-  .backdrop.show{display:flex;}
-  .backdrop.show .modal{transform:scale(1);opacity:1;}
-  .choices{display:flex;gap:8px;margin-top:12px;justify-content:center;}
-  .choices button{flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;font-weight:600;}
-  .yes{background:#2fb26f;color:white;}
-  .no{background:#ff6b6b;color:white;}
-  .admin-btn{margin-top:8px;background:#fff;border:1px solid rgba(20,30,60,0.06);padding:8px 10px;border-radius:8px;cursor:pointer;}
-  @media (max-width:420px){:root{--maxw:360px;} .center-card{padding:16px} input[type=text], input[type=tel]{font-size:15px}}
-
-  /* dashboard styles */
-  .dash-wrap{width:98vw;max-width:1200px;height:86vh;overflow:auto;background:var(--card-bg);border-radius:12px;padding:20px;box-sizing:border-box}
-  @media (max-width:768px){.dash-grid{grid-template-columns:1fr !important}}
-  .dash-grid{display:grid;grid-template-columns:1fr 420px;gap:16px}
-  .card{background:#fff;padding:12px;border-radius:10px;box-shadow:0 6px 20px rgba(20,30,70,0.04);}
-  .table-wrap{max-height:44vh;overflow:auto}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  th,td{padding:8px;border-bottom:1px solid #eef4fb;text-align:left}
-  .tools{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-  .upload-input{display:block;margin-top:6px}
-  .small-muted{font-size:12px;color:var(--muted)}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Feedback Siswa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-up { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
 </head>
-<body>
-  <div class="stage">
-    <div class="wrap">
-      <div class="center-card" id="mainCard">
-        <div class="logo"><img id="logoImg" src="logo.png" alt="logo"></div>
-        <h1 id="presentTitle">SMA Katolik St. Louis 2</h1>
-        <p class="lead" id="presentSub"></p>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
 
-        <form id="formSiswa" onsubmit="return false;">
-          <input type="text" id="nama" placeholder="Nama" autocomplete="name" required />
-          <input type="tel" id="telepon" placeholder="Nomor Telepon" inputmode="tel" required />
-          <input type="text" id="asalSMP" placeholder="Asal SMP" required />
-          <button class="primary" id="btnContinue" type="button">Lanjutkan</button>
-          <button class="secondary admin-btn" id="btnAdmin" type="button">Admin</button>
-          <div class="small">Data akan tersimpan walaupun halaman direfresh.</div>
-        </form>
-      </div>
-    </div>
-  </div>
 
-  <!-- student modal -->
-  <div class="backdrop" id="studentBackdrop" aria-hidden="true">
-    <div class="modal login-modal" role="dialog" aria-modal="true">
-      <div style="text-align:center">
-        <h3 style="margin:0 0 6px 0">Terima kasih!</h3>
-        <p style="margin:0;color:var(--muted)">Apakah kamu tertarik?</p>
-        <div class="choices">
-          <button class="yes" id="btnYes">Puas</button>
-          <button class="no" id="btnNo">Tidak Puas</button>
+    <!-- Feedback Form -->
+    <div id="feedbackForm" class="max-w-2xl mx-auto mt-8 p-4 sm:p-6 fade-in">
+        <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+            <div class="text-center mb-8">
+                <div class="flex justify-center mb-6">
+                    <div id="logoContainer" class="bg-indigo-600 text-white p-4 rounded-xl shadow-lg">
+                        <svg id="defaultIcon" class="w-12 h-12 sm:w-16 sm:h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <img id="customLogo" src="" alt="Logo" class="w-12 h-12 sm:w-16 sm:h-16 object-contain hidden">
+                    </div>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">SMA Katolik St. Louis 2</h2>
+                <p class="text-sm sm:text-base text-gray-600">Berikan feedback Anda untuk membantu kami meningkatkan layanan</p>
+            </div>
+
+            <form id="studentForm" class="space-y-4 sm:space-y-6">
+                <div>
+                    <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                    <input type="text" id="nama" name="nama" required 
+                           class="w-full px-3 py-3 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                           placeholder="Masukkan nama lengkap Anda">
+                </div>
+
+                <div>
+                    <label for="telepon" class="block text-sm font-medium text-gray-700 mb-2">Nomor Telepon</label>
+                    <input type="tel" id="telepon" name="telepon" required 
+                           class="w-full px-3 py-3 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                           placeholder="Contoh: 08123456789">
+                </div>
+
+                <div>
+                    <label for="sekolah" class="block text-sm font-medium text-gray-700 mb-2">Asal Sekolah</label>
+                    <input type="text" id="sekolah" name="sekolah" required 
+                           class="w-full px-3 py-3 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                           placeholder="Masukkan nama sekolah Anda">
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" 
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 text-sm sm:text-base rounded-lg transition-colors transform hover:scale-105 active:scale-95">
+                        Submit Feedback
+                    </button>
+                </div>
+                
+                <button type="button" id="showDashboardBtn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 text-sm sm:text-base rounded-lg transition-colors transform hover:scale-105 active:scale-95">
+                    Lihat Dashboard
+                </button>
+            </form>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- admin modal (login then dashboard) -->
-  <div class="backdrop" id="adminBackdrop" aria-hidden="true">
-    <div class="modal dash-modal" role="dialog" aria-modal="true">
-      <div id="adminContent"></div>
+    <!-- Dashboard -->
+    <div id="dashboard" class="max-w-6xl mx-auto mt-8 p-4 sm:p-6 hidden">
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 space-y-4 sm:space-y-0">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard Feedback</h2>
+                    <p class="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Ringkasan feedback dari siswa</p>
+                </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+                    <div class="flex space-x-2 w-full sm:w-auto">
+                        <button id="settingsBtn" class="flex-1 sm:flex-none bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 text-sm rounded-lg font-medium transition-colors">
+                            ⚙️ Settings
+                        </button>
+                        <button id="logoutBtn" class="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-3 py-2 text-sm rounded-lg font-medium transition-colors">
+                            Logout
+                        </button>
+                    </div>
+                    <div class="text-center sm:text-right">
+                        <div class="text-xl sm:text-2xl font-bold text-indigo-600" id="totalResponses">0</div>
+                        <div class="text-xs sm:text-sm text-gray-500">Total Responses</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Panel -->
+            <div id="settingsPanel" class="bg-gray-50 border border-gray-200 rounded-lg p-4 sm:p-6 mb-6 sm:mb-8 hidden">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">Pengaturan Dashboard</h3>
+                
+                <!-- Data Management Section -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h4 class="text-sm font-semibold text-blue-900 mb-3">📊 Manajemen Data</h4>
+                    <p class="text-xs text-blue-700 mb-4">Backup dan restore data untuk sinkronisasi antar perangkat</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button id="exportData" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 text-sm rounded-lg font-medium transition-colors">
+                            📤 Export Data
+                        </button>
+                        <div class="relative">
+                            <input type="file" id="importData" accept=".json" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <button class="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-2 text-sm rounded-lg font-medium transition-colors">
+                                📥 Import Data
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <textarea id="dataCode" placeholder="Atau paste kode data di sini..." 
+                                class="w-full px-3 py-2 text-xs border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none" 
+                                rows="3"></textarea>
+                        <div class="flex space-x-2 mt-2">
+                            <button id="loadFromCode" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 text-xs rounded font-medium transition-colors">
+                                Load dari Kode
+                            </button>
+                            <button id="generateCode" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 text-xs rounded font-medium transition-colors">
+                                Generate Kode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Upload Logo</label>
+                        <input type="file" id="logoUpload" accept="image/*" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <div id="logoPreview" class="mt-2 hidden">
+                            <img id="logoImg" src="" alt="Logo Preview" class="w-12 h-12 sm:w-16 sm:h-16 object-contain border border-gray-200 rounded">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Upload Background</label>
+                        <input type="file" id="backgroundUpload" accept="image/*" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <div id="backgroundPreview" class="mt-2 hidden">
+                            <img id="backgroundImg" src="" alt="Background Preview" class="w-16 h-10 sm:w-20 sm:h-12 object-cover border border-gray-200 rounded">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 mt-4 sm:mt-6">
+                    <button id="saveSettings" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm rounded-lg font-medium transition-colors">
+                        Simpan Pengaturan
+                    </button>
+                    <button id="resetSettings" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm rounded-lg font-medium transition-colors">
+                        Reset Default
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 sm:p-6">
+                    <div class="flex items-center">
+                        <div class="bg-green-500 text-white p-2 sm:p-3 rounded-lg">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3 sm:ml-4">
+                            <div class="text-xl sm:text-2xl font-bold text-green-600" id="puasCount">0</div>
+                            <div class="text-sm sm:text-base text-green-700">Siswa Puas</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
+                    <div class="flex items-center">
+                        <div class="bg-red-500 text-white p-2 sm:p-3 rounded-lg">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h1.01M15 12h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3 sm:ml-4">
+                            <div class="text-xl sm:text-2xl font-bold text-red-600" id="tidakPuasCount">0</div>
+                            <div class="text-sm sm:text-base text-red-700">Siswa Tidak Puas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Responses Table -->
+            <div class="overflow-x-auto -mx-4 sm:mx-0">
+                <div class="inline-block min-w-full align-middle">
+                    <table class="min-w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs sm:text-sm">No</th>
+                                <th class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs sm:text-sm">Nama</th>
+                                <th class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs sm:text-sm hidden sm:table-cell">Telepon</th>
+                                <th class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs sm:text-sm hidden md:table-cell">Sekolah</th>
+                                <th class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs sm:text-sm">Kepuasan</th>
+                                <th class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs sm:text-sm hidden lg:table-cell">Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="responseTableBody">
+                            <tr>
+                                <td colspan="6" class="border border-gray-200 px-2 sm:px-4 py-6 sm:py-8 text-center text-gray-500 text-sm">
+                                    Belum ada feedback yang masuk
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-<script>
-/*
-  FULL index.html with:
-  - API_URL variable (set to your Google Apps Script web app URL)
-  - send data to API + localStorage
-  - admin dashboard (login: tidar119) with upload logo/bg, export CSV/PDF, chart, delete row, reset
-*/
+    <!-- Satisfaction Popup -->
+    <div id="satisfactionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl p-6 sm:p-8 max-w-md w-full mx-4 slide-up">
+            <div class="text-center">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Bagaimana tingkat kepuasan Anda?</h3>
+                <p class="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">Pilih salah satu untuk melanjutkan</p>
+                
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 justify-center">
+                    <button id="puasBtn" class="flex flex-col items-center p-4 sm:p-6 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all transform hover:scale-105 active:scale-95">
+                        <div class="text-3xl sm:text-4xl mb-2">😊</div>
+                        <span class="text-base sm:text-lg font-semibold text-gray-700">Puas</span>
+                    </button>
+                    
+                    <button id="tidakPuasBtn" class="flex flex-col items-center p-4 sm:p-6 border-2 border-gray-200 rounded-xl hover:border-red-500 hover:bg-red-50 transition-all transform hover:scale-105 active:scale-95">
+                        <div class="text-3xl sm:text-4xl mb-2">😞</div>
+                        <span class="text-base sm:text-lg font-semibold text-gray-700">Tidak Puas</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-// --- CONFIG: ganti API_URL jika kantor mau pakai sheet mereka ---
-const API_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // Ganti dengan URL Apps Script Anda yang sudah dimodifikasi
+    <!-- Password Modal -->
+    <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl p-6 sm:p-8 max-w-md w-full mx-4 slide-up">
+            <div class="text-center">
+                <div class="bg-indigo-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Masukkan Password</h3>
+                <p class="text-sm sm:text-base text-gray-600 mb-6">Dashboard dilindungi dengan password</p>
+                
+                <input type="password" id="passwordInput" placeholder="Masukkan password..." 
+                       class="w-full px-3 py-3 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors mb-4">
+                
+                <div id="passwordError" class="text-red-600 text-sm mb-4 hidden">Password salah! Coba lagi.</div>
+                
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                    <button id="cancelPassword" class="w-full sm:flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 text-sm rounded-lg font-medium transition-colors">
+                        Batal
+                    </button>
+                    <button id="submitPassword" class="w-full sm:flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm rounded-lg font-medium transition-colors">
+                        Masuk
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-// --- Storage keys
-const KEY_ENTRIES = 'peppo_entries_v2';
-const KEY_SETTINGS = 'peppo_settings_v2';
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl p-6 sm:p-8 max-w-md w-full mx-4 slide-up">
+            <div class="text-center">
+                <div class="bg-green-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Feedback Berhasil Dikirim!</h3>
+                <p class="text-sm sm:text-base text-gray-600 mb-6">Terima kasih atas feedback Anda. Data telah tersimpan di dashboard.</p>
+                <button id="closeModal" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 sm:px-6 sm:py-2 text-sm sm:text-base rounded-lg font-medium transition-colors">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
 
-// load settings or default
-let settings = JSON.parse(localStorage.getItem(KEY_SETTINGS) || '{}');
-// defaults
-if(!settings.present) settings.present = 'SMA Katolik St. Louis 2';
-if(!settings.sub) settings.sub = '';
-// default logo: prefer local file logo.png (same folder). If not present, fallback to inline svg (set below)
-const defaultLogo = "logo.png";
-if(!settings.logo) {
-  // we'll try to use logo.png by default; if absent the <img> will show broken — but it's okay because admin can upload
-  settings.logo = defaultLogo;
-}
-if(!settings.bg) settings.bg = ''; // can be set via admin (dataURL) — otherwise body uses background.jpg if available (handled below)
+    <script>
+        // Data storage
+        let feedbackData = JSON.parse(localStorage.getItem('feedbackData')) || [];
 
-function applySettings(){
-  document.getElementById('presentTitle').textContent = settings.present || 'Presentasi .......';
-  document.getElementById('presentSub').textContent = settings.sub || '';
-  if(settings.logo){
-    document.getElementById('logoImg').src = settings.logo;
-  } else {
-    document.getElementById('logoImg').src = defaultLogo;
-  }
-  if(settings.bg){
-    document.body.style.background = "url('"+settings.bg+"') center/cover fixed, linear-gradient(180deg,var(--bg1),var(--bg2))";
-  } else {
-    // if there's a background.jpg in same folder, let browser load it; otherwise keep gradient
-    // We can't reliably detect file existence without a request, so set inline style to attempt background.jpg first
-    // but only if the file exists on the server (on GitHub Pages it will)
-    // We'll prefer the local file background.jpg; admin-uploaded setting overrides.
-    if(!document.body.style.backgroundImage || document.body.style.backgroundImage === '') {
-      // attempt to use background.jpg (user should place background.jpg in same folder)
-      document.body.style.background = "url('background.jpg') center/cover fixed, linear-gradient(180deg,var(--bg1),var(--bg2))";
-      document.body.style.backgroundSize = "cover";
-    }
-  }
-}
-applySettings();
+        // DOM elements
+        const feedbackForm = document.getElementById('feedbackForm');
+        const dashboard = document.getElementById('dashboard');
+        const showFormBtn = document.getElementById('showFormBtn');
+        const showDashboardBtn = document.getElementById('showDashboardBtn');
+        const studentForm = document.getElementById('studentForm');
+        const satisfactionModal = document.getElementById('satisfactionModal');
+        const successModal = document.getElementById('successModal');
+        const passwordModal = document.getElementById('passwordModal');
+        const closeModal = document.getElementById('closeModal');
+        const puasBtn = document.getElementById('puasBtn');
+        const tidakPuasBtn = document.getElementById('tidakPuasBtn');
+        const passwordInput = document.getElementById('passwordInput');
+        const submitPassword = document.getElementById('submitPassword');
+        const cancelPassword = document.getElementById('cancelPassword');
+        const passwordError = document.getElementById('passwordError');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const logoUpload = document.getElementById('logoUpload');
+        const backgroundUpload = document.getElementById('backgroundUpload');
+        const saveSettings = document.getElementById('saveSettings');
+        const resetSettings = document.getElementById('resetSettings');
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        // Store temporary form data
+        let tempFormData = null;
+        
+        // Settings data
+        let settings = JSON.parse(localStorage.getItem('dashboardSettings')) || {
+            logo: null,
+            background: null
+        };
 
-// entries helpers
-function getEntries(){ return JSON.parse(localStorage.getItem(KEY_ENTRIES) || '[]'); }
-function saveEntries(arr){ localStorage.setItem(KEY_ENTRIES, JSON.stringify(arr)); }
-
-// form behavior
-const btnContinue = document.getElementById('btnContinue');
-const studentBackdrop = document.getElementById('studentBackdrop');
-const adminBackdrop = document.getElementById('adminBackdrop');
-const form = document.getElementById('formSiswa');
-
-btnContinue.addEventListener('click', ()=>{
-  const nama = document.getElementById('nama').value.trim();
-  const telepon = document.getElementById('telepon').value.trim();
-  const asalSMP = document.getElementById('asalSMP').value.trim();
-  if(!nama || !telepon || !asalSMP){ alert('Harap lengkapi semua data'); return; }
-
-  // Simpan ke localStorage (dashboard admin)
-  const entries = getEntries();
-  const id = entries.length ? (entries[entries.length-1].id + 1) : 1;
-  const entry = { id, name: nama, phone: telepon, smp: asalSMP, created: new Date().toISOString(), device: navigator.userAgent, status: null };
-  entries.push(entry);
-  saveEntries(entries);
-
-  // show popup
-  studentBackdrop.classList.add('show');
-});
-
-// choice handlers
-document.getElementById('btnYes').addEventListener('click', ()=> handleChoice('Puas'));
-document.getElementById('btnNo').addEventListener('click', ()=> handleChoice('Tidak Puas'));
-
-function handleChoice(status){
-  // find last entry with null status
-  const entries = getEntries();
-  for(let i=entries.length-1;i>=0;i--){
-    if(entries[i].status === null){
-      entries[i].status = status;
-      
-      // Kirim data ke Google Sheets (API_URL) dengan status
-      try {
-        fetch(API_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nama: entries[i].name,
-            telepon: entries[i].phone,
-            asal_smp: entries[i].smp,
-            status: status
-          })
-        }).then(() => {
-          console.log("Data terkirim ke Google Sheets dengan status: " + status);
-        }).catch(err => {
-          console.error("Gagal kirim data ke API: ", err);
+        // Navigation
+        showDashboardBtn.addEventListener('click', () => {
+            showPasswordModal();
         });
-      } catch(e){
-        console.warn('Fetch error', e);
-      }
 
-      break;
-    }
-  }
-  saveEntries(entries);
-  studentBackdrop.classList.remove('show');
-  form.reset();
-}
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            dashboard.classList.add('hidden');
+            feedbackForm.classList.remove('hidden');
+        });
 
-// preserve field values while typing (so if accidentally refresh, fields persist)
-const nameInput = document.getElementById('nama');
-const phoneInput = document.getElementById('telepon');
-const smpInput = document.getElementById('asalSMP');
-nameInput.value = localStorage.getItem('temp_name') || '';
-phoneInput.value = localStorage.getItem('temp_phone') || '';
-smpInput.value = localStorage.getItem('temp_smp') || '';
-nameInput.addEventListener('input', ()=> localStorage.setItem('temp_name', nameInput.value));
-phoneInput.addEventListener('input', ()=> localStorage.setItem('temp_phone', phoneInput.value));
-smpInput.addEventListener('input', ()=> localStorage.setItem('temp_smp', smpInput.value));
 
-// admin button open login
-document.getElementById('btnAdmin').addEventListener('click', ()=> openAdminLogin());
 
-function openAdminLogin(){
-  adminBackdrop.classList.add('show');
-  const content = document.getElementById('adminContent');
-  content.innerHTML = `
-    <div style="text-align:center;margin-bottom:16px">
-      <h3 style="margin:0">Admin Login</h3>
-    </div>
-    <div class="card" style="padding:16px;width:320px;margin:0 auto;border-radius:10px">
-      <label style="font-size:13px;display:block;margin-bottom:6px">Password Admin</label>
-      <div style="position:relative">
-        <input id="adminPwd" type="password" style="width:100%;padding:10px 36px 10px 12px;border-radius:8px;border:1px solid #eef;font-size:14px;background:#f9f9f9" placeholder="Masukkan password" autofocus />
-        <label style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer">
-          <input type="checkbox" id="togglePwd" style="display:none">
-          <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-        </label>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:14px">
-        <button id="doLogin" class="primary" style="flex:1;padding:10px">Masuk</button>
-        <button id="cancelLogin" class="secondary" style="flex:1;padding:10px">Batal</button>
-      </div>
-      <div style="margin-top:10px;font-size:12px;color:#666">Password default: <strong>tidar119</strong></div>
-    </div>
-  `;
-  document.getElementById('cancelLogin').addEventListener('click', ()=> adminBackdrop.classList.remove('show'));
-  document.getElementById('doLogin').addEventListener('click', doAdminLogin);
-  document.getElementById('togglePwd').addEventListener('change', function() {
-    const pwdInput = document.getElementById('adminPwd');
-    pwdInput.type = this.checked ? 'text' : 'password';
-    document.getElementById('eyeIcon').style.stroke = this.checked ? getComputedStyle(document.documentElement).getPropertyValue('--primary') : 'currentColor';
-  });
-}
+        // Form submission - show satisfaction popup
+        studentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Store form data temporarily
+            const formData = new FormData(this);
+            tempFormData = {
+                nama: formData.get('nama'),
+                telepon: formData.get('telepon'),
+                sekolah: formData.get('sekolah')
+            };
+            
+            // Show satisfaction popup
+            satisfactionModal.classList.remove('hidden');
+            satisfactionModal.classList.add('flex');
+        });
 
-function doAdminLogin(){
-  const v = document.getElementById('adminPwd').value || '';
-  if(v === 'tidar119'){
-    renderDashboard();
-  } else {
-    alert('Password salah');
-  }
-}
+        // Satisfaction button handlers
+        puasBtn.addEventListener('click', function() {
+            saveFeedback('puas');
+        });
 
-// dashboard render
-function renderDashboard(){
-  const content = document.getElementById('adminContent');
-  content.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <h3 style="margin:0">Dashboard Admin</h3>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button id="btnCloseDash" style="padding:8px 10px;border-radius:8px;border:0;background:#fff;cursor:pointer">Tutup</button>
-      </div>
-    </div>
-    <div class="dash-wrap">
-      <div class="dash-grid">
-        <div>
-          <div class="card">
-            <h4 style="margin:0 0 8px 0">Pengaturan</h4>
-            <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
-              <label>Logo (unggah)</label>
-              <input type="file" id="logoUpload" class="upload-input" accept="image/*" />
-              <label>Background (unggah)</label>
-              <input type="file" id="bgUpload" class="upload-input" accept="image/*" />
-              <label>URL Google Sheets (API)</label>
-              <input type="text" id="apiInput" placeholder="Masukkan API URL" value="${escapeHtml(API_URL)}" />
-              <label>Teks Presentasi</label>
-              <input type="text" id="presentInput" placeholder="Presentasi ......." value="${escapeHtml(settings.present)}" />
-              <label>Sub Teks</label>
-              <input type="text" id="subInput" placeholder="Sub teks" value="${escapeHtml(settings.sub)}" />
-              <div style="display:flex;gap:8px">
-                <button id="saveSettings" class="primary">Simpan</button>
-                <button id="resetAll" class="secondary">Reset Data</button>
-              </div>
-            </div>
-          </div>
-          <div style="height:12px"></div>
-          <div class="card">
-            <h4 style="margin:0 0 8px 0">Rekap & Diagram</h4>
-            <div style="display:flex;gap:12px;align-items:center">
-              <div style="flex:1">
-                <div id="chartSmall" style="height:120px;display:flex;align-items:center;justify-content:center"></div>
-              </div>
-              <div style="width:120px">
-                <div style="font-size:13px">Puas: <strong id="countYes">0</strong></div>
-                <div style="font-size:13px">Tidak Puas: <strong id="countNo">0</strong></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="card">
-            <h4 style="margin:0 0 8px 0">Daftar Pengisi</h4>
-            <div class="table-wrap" id="tableWrap"></div>
-            <div class="tools">
-              <button id="exportCSV" class="primary">Download CSV</button>
-              <button id="exportPDF" class="secondary">Download PDF</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  // attach listeners
-  document.getElementById('btnCloseDash').addEventListener('click', ()=> adminBackdrop.classList.remove('show'));
-  document.getElementById('saveSettings').addEventListener('click', ()=> saveDashboardSettings());
-  document.getElementById('resetAll').addEventListener('click', ()=> {
-    if(confirm('Reset semua data?')){ localStorage.removeItem(KEY_ENTRIES); location.reload(); }
-  });
-  document.getElementById('logoUpload').addEventListener('change', handleLogoUpload);
-  document.getElementById('bgUpload').addEventListener('change', handleBgUpload);
-  document.getElementById('exportCSV').addEventListener('click', exportCSV);
-  document.getElementById('exportPDF').addEventListener('click', exportPDF);
-  renderTable();
-  renderChart();
+        tidakPuasBtn.addEventListener('click', function() {
+            saveFeedback('tidak puas');
+        });
 
-  // Add single delete handler
-  document.addEventListener('click', function(e) {
-    const target = e.target;
-    if(target.classList.contains('deleteRow') || (target.parentElement && target.parentElement.classList.contains('deleteRow'))) {
-      const id = parseInt(target.dataset.id || (target.parentElement && target.parentElement.dataset.id));
-      if(id && confirm('Hapus data ini?')) {
-        const entries = getEntries().filter(en => en.id !== id);
-        saveEntries(entries);
-        renderTable();
-        renderChart();
-      }
-    }
-  });
-}
+        // Save feedback function
+        function saveFeedback(kepuasan) {
+            const feedback = {
+                id: Date.now(),
+                nama: tempFormData.nama,
+                telepon: tempFormData.telepon,
+                sekolah: tempFormData.sekolah,
+                kepuasan: kepuasan,
+                waktu: new Date().toLocaleString('id-ID')
+            };
 
-function saveDashboardSettings(){
-  const apiVal = document.getElementById('apiInput').value.trim();
-  if(apiVal) {
-    // allow user to change API url at runtime (saved in settings)
-    settings.api = apiVal;
-  }
-  settings.present = document.getElementById('presentInput').value.trim() || settings.present;
-  settings.sub = document.getElementById('subInput').value.trim() || settings.sub;
-  localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
-  applySettings();
-  alert('Pengaturan tersimpan. Catatan: Perubahan API berlaku pada sesi ini jika Anda juga mengganti konstanta API_URL pada file (opsional).');
-}
+            feedbackData.push(feedback);
+            localStorage.setItem('feedbackData', JSON.stringify(feedbackData));
+            
+            // Hide satisfaction modal
+            satisfactionModal.classList.add('hidden');
+            satisfactionModal.classList.remove('flex');
+            
+            // Show success modal
+            successModal.classList.remove('hidden');
+            successModal.classList.add('flex');
+            
+            // Reset form and temp data
+            studentForm.reset();
+            tempFormData = null;
+        }
 
-function handleLogoUpload(e){
-  const f = e.target.files[0]; if(!f) return;
-  const fr = new FileReader();
-  fr.onload = ()=>{ settings.logo = fr.result; localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings)); applySettings(); alert('Logo tersimpan (disimpan di browser). Harap unggah logo.png ke repo untuk default server-side.'); }
-  fr.readAsDataURL(f);
-}
-function handleBgUpload(e){
-  const f = e.target.files[0]; if(!f) return;
-  const fr = new FileReader();
-  fr.onload = ()=>{ settings.bg = fr.result; localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings)); applySettings(); alert('Background tersimpan (disimpan di browser). Harap unggah background.jpg ke repo untuk default server-side.'); }
-  fr.readAsDataURL(f);
-}
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            successModal.classList.add('hidden');
+            successModal.classList.remove('flex');
+        });
 
-function renderTable(){
-  const wrap = document.getElementById('tableWrap');
-  const entries = getEntries().slice().reverse();
-  if(entries.length===0){ wrap.innerHTML = '<div class="small-muted">Belum ada data</div>'; return; }
-  let html = `<table><thead><tr><th>No</th><th>Nama</th><th>Telp</th><th>Asal SMP</th><th>Tgl</th><th>Status</th><th style="width:30px"></th></tr></thead><tbody>`;
-  entries.forEach((e,idx)=>{
-    const date = new Date(e.created).toLocaleString();
-    html += `<tr>
-      <td>${e.id}</td>
-      <td>${escapeHtml(e.name)}</td>
-      <td>${escapeHtml(e.phone)}</td>
-      <td>${escapeHtml(e.smp||'-')}</td>
-      <td>${escapeHtml(date)}</td>
-      <td>${e.status||'-'}</td>
-      <td style="text-align:center"><svg class="deleteRow" data-id="${e.id}" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2" style="cursor:pointer">
-        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-      </svg></td>
-    </tr>`;
-  });
-  html += `</tbody></table>`;
-  wrap.innerHTML = html;
-}
+        // Update dashboard
+        function updateDashboard() {
+            const totalResponses = feedbackData.length;
+            const puasCount = feedbackData.filter(item => item.kepuasan === 'puas').length;
+            const tidakPuasCount = feedbackData.filter(item => item.kepuasan === 'tidak puas').length;
 
-function renderChart(){
-  const wrap = document.getElementById('chartSmall');
-  const entries = getEntries();
-  const yes = entries.filter(x=>x.status==='Puas').length;
-  const no = entries.filter(x=>x.status==='Tidak Puas').length;
-  document.getElementById('countYes').textContent = yes;
-  document.getElementById('countNo').textContent = no;
-  const total = (yes + no) || 1;
-  const size = 120; const r = 36; const c = size/2; const circ = 2*Math.PI*r;
-  const dashYes = (yes/total)*circ; const dashNo = circ-dashYes;
-  wrap.innerHTML = `
-    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-      <circle cx="${c}" cy="${c}" r="${r}" fill="transparent" stroke="#f1f6ff" stroke-width="18"></circle>
-      <circle cx="${c}" cy="${c}" r="${r}" fill="transparent" stroke="${getComputedStyle(document.documentElement).getPropertyValue('--primary')||'#4a90e2'}" stroke-width="18"
-        stroke-dasharray="${dashYes} ${dashNo}" stroke-dashoffset="${-circ*0.25}" stroke-linecap="round" transform="rotate(-90 ${c} ${c})"></circle>
-      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="12" fill="#223">${yes}/${yes+no}</text>
-    </svg>
-  `;
-}
+            document.getElementById('totalResponses').textContent = totalResponses;
+            document.getElementById('puasCount').textContent = puasCount;
+            document.getElementById('tidakPuasCount').textContent = tidakPuasCount;
 
-// export CSV & PDF
-function exportCSV(){
-  const entries = getEntries();
-  if(entries.length===0){ alert('Belum ada data'); return; }
-  const header = ['No','Nama','Telp','Asal SMP','Tanggal','Status'];
-  const rows = entries.map(e=>[e.id, e.name, e.phone, e.smp||'', new Date(e.created).toLocaleString(), e.status||'']);
-  const csv = [header.join(','), ...rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(','))].join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='rekap_pengisi.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-}
+            const tableBody = document.getElementById('responseTableBody');
+            
+            if (feedbackData.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="border border-gray-200 px-2 sm:px-4 py-6 sm:py-8 text-center text-gray-500 text-sm">
+                            Belum ada feedback yang masuk
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tableBody.innerHTML = feedbackData.map((item, index) => `
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm">${index + 1}</td>
+                        <td class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm">${item.nama}</td>
+                        <td class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm hidden sm:table-cell">${item.telepon}</td>
+                        <td class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm hidden md:table-cell">${item.sekolah}</td>
+                        <td class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${
+                                item.kepuasan === 'puas' 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-red-100 text-red-800'
+                            }">
+                                ${item.kepuasan === 'puas' ? '😊 Puas' : '😞 Tidak Puas'}
+                            </span>
+                        </td>
+                        <td class="border border-gray-200 px-2 sm:px-4 py-2 sm:py-3 text-xs text-gray-600 hidden lg:table-cell">${item.waktu}</td>
+                    </tr>
+                `).join('');
+            }
+        }
 
-function exportPDF(){
-  const entries = getEntries();
-  const w = window.open('','_blank');
-  let html = `<html><head><title>Rekap</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse}th,td{padding:6px;border:1px solid #ddd}</style></head><body>`;
-  html += `<h3>Rekap Pengisi</h3>`;
-  html += `<table><thead><tr><th>No</th><th>Nama</th><th>Telp</th><th>Asal SMP</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>`;
-  getEntries().forEach(e=>{ html += `<tr><td>${e.id}</td><td>${escapeHtml(e.name)}</td><td>${escapeHtml(e.phone)}</td><td>${escapeHtml(e.smp||'')}</td><td>${new Date(e.created).toLocaleString()}</td><td>${e.status||''}</td></tr>`; });
-  html += `</tbody></table></body></html>`;
-  w.document.write(html); w.document.close(); setTimeout(()=> w.print(),400);
-}
+        // Password functions
+        function showPasswordModal() {
+            passwordModal.classList.remove('hidden');
+            passwordModal.classList.add('flex');
+            passwordInput.focus();
+        }
 
-// small utilities
-function escapeHtml(s){ if(!s && s!==0) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+        function hidePasswordModal() {
+            passwordModal.classList.add('hidden');
+            passwordModal.classList.remove('flex');
+            passwordInput.value = '';
+            passwordError.classList.add('hidden');
+        }
 
-// ensure admin modal close when clicking outside or pressing ESC
-studentBackdrop.addEventListener('click', (e)=>{ if(e.target === studentBackdrop) studentBackdrop.classList.remove('show'); });
-adminBackdrop.addEventListener('click', (e)=>{ if(e.target === adminBackdrop) adminBackdrop.classList.remove('show'); });
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ studentBackdrop.classList.remove('show'); adminBackdrop.classList.remove('show'); } });
+        function showDashboard() {
+            dashboard.classList.remove('hidden');
+            feedbackForm.classList.add('hidden');
+            updateDashboard();
+        }
 
-// auto-update dashboard counts if open
-setInterval(()=>{ if(document.getElementById('adminContent').innerHTML.trim() !== ''){ renderTable(); renderChart(); } },1000);
+        // Password event listeners
+        submitPassword.addEventListener('click', () => {
+            if (passwordInput.value === 'tidar119') {
+                hidePasswordModal();
+                showDashboard();
+            } else {
+                passwordError.classList.remove('hidden');
+                passwordInput.value = '';
+            }
+        });
 
-// on load, restore temp input values
-window.addEventListener('load', ()=>{
-  const tname = localStorage.getItem('temp_name'); 
-  const tphone = localStorage.getItem('temp_phone');
-  const tsmp = localStorage.getItem('temp_smp');
-  if(tname) document.getElementById('nama').value = tname;
-  if(tphone) document.getElementById('telepon').value = tphone;
-  if(tsmp) document.getElementById('asalSMP').value = tsmp;
-  applySettings();
-});
-</script>
-</body>
+        cancelPassword.addEventListener('click', hidePasswordModal);
+
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitPassword.click();
+            }
+        });
+
+        // Data Management Functions
+        const exportData = document.getElementById('exportData');
+        const importData = document.getElementById('importData');
+        const dataCode = document.getElementById('dataCode');
+        const loadFromCode = document.getElementById('loadFromCode');
+        const generateCode = document.getElementById('generateCode');
+
+        // Export data as downloadable file
+        exportData.addEventListener('click', () => {
+            const allData = {
+                feedbackData: feedbackData,
+                settings: settings,
+                timestamp: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `feedback-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            alert('Data berhasil diexport! File akan didownload.');
+        });
+
+        // Import data from file
+        importData.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (importedData.feedbackData && importedData.settings) {
+                            if (confirm('Import data ini? Data yang ada sekarang akan diganti.')) {
+                                feedbackData = importedData.feedbackData;
+                                settings = importedData.settings;
+                                
+                                localStorage.setItem('feedbackData', JSON.stringify(feedbackData));
+                                localStorage.setItem('dashboardSettings', JSON.stringify(settings));
+                                
+                                updateDashboard();
+                                applySettings();
+                                
+                                alert('Data berhasil diimport!');
+                            }
+                        } else {
+                            alert('Format file tidak valid!');
+                        }
+                    } catch (error) {
+                        alert('Error membaca file: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Generate shareable code
+        generateCode.addEventListener('click', () => {
+            const allData = {
+                feedbackData: feedbackData,
+                settings: settings,
+                timestamp: new Date().toISOString()
+            };
+            
+            const compressed = btoa(JSON.stringify(allData));
+            dataCode.value = compressed;
+            dataCode.select();
+            
+            // Try to copy to clipboard
+            try {
+                document.execCommand('copy');
+                alert('Kode data berhasil digenerate dan disalin ke clipboard!');
+            } catch (err) {
+                alert('Kode data berhasil digenerate! Silakan copy manual.');
+            }
+        });
+
+        // Load from code
+        loadFromCode.addEventListener('click', () => {
+            const code = dataCode.value.trim();
+            if (!code) {
+                alert('Masukkan kode data terlebih dahulu!');
+                return;
+            }
+            
+            try {
+                const decodedData = JSON.parse(atob(code));
+                
+                if (decodedData.feedbackData && decodedData.settings) {
+                    if (confirm('Load data dari kode ini? Data yang ada sekarang akan diganti.')) {
+                        feedbackData = decodedData.feedbackData;
+                        settings = decodedData.settings;
+                        
+                        localStorage.setItem('feedbackData', JSON.stringify(feedbackData));
+                        localStorage.setItem('dashboardSettings', JSON.stringify(settings));
+                        
+                        updateDashboard();
+                        applySettings();
+                        
+                        alert('Data berhasil diload dari kode!');
+                        dataCode.value = '';
+                    }
+                } else {
+                    alert('Kode data tidak valid!');
+                }
+            } catch (error) {
+                alert('Error membaca kode: Format tidak valid!');
+            }
+        });
+
+        // Settings functions
+        settingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.toggle('hidden');
+        });
+
+        logoUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('logoImg').src = e.target.result;
+                    document.getElementById('logoPreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        backgroundUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('backgroundImg').src = e.target.result;
+                    document.getElementById('backgroundPreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        saveSettings.addEventListener('click', () => {
+            const logoFile = logoUpload.files[0];
+            const backgroundFile = backgroundUpload.files[0];
+
+            if (logoFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    settings.logo = e.target.result;
+                    localStorage.setItem('dashboardSettings', JSON.stringify(settings));
+                    applySettings();
+                };
+                reader.readAsDataURL(logoFile);
+            }
+
+            if (backgroundFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    settings.background = e.target.result;
+                    localStorage.setItem('dashboardSettings', JSON.stringify(settings));
+                    applySettings();
+                };
+                reader.readAsDataURL(backgroundFile);
+            }
+
+            alert('Pengaturan berhasil disimpan!');
+        });
+
+        resetSettings.addEventListener('click', () => {
+            if (confirm('Yakin ingin reset ke pengaturan default?')) {
+                settings = { logo: null, background: null };
+                localStorage.setItem('dashboardSettings', JSON.stringify(settings));
+                applySettings();
+                document.getElementById('logoPreview').classList.add('hidden');
+                document.getElementById('backgroundPreview').classList.add('hidden');
+                logoUpload.value = '';
+                backgroundUpload.value = '';
+                alert('Pengaturan berhasil direset!');
+            }
+        });
+
+        function applySettings() {
+            // Apply logo
+            if (settings.logo) {
+                document.getElementById('customLogo').src = settings.logo;
+                document.getElementById('customLogo').classList.remove('hidden');
+                document.getElementById('defaultIcon').classList.add('hidden');
+                document.getElementById('logoContainer').classList.remove('bg-indigo-600');
+                document.getElementById('logoContainer').classList.add('bg-transparent');
+            } else {
+                document.getElementById('customLogo').classList.add('hidden');
+                document.getElementById('defaultIcon').classList.remove('hidden');
+                document.getElementById('logoContainer').classList.add('bg-indigo-600');
+                document.getElementById('logoContainer').classList.remove('bg-transparent');
+            }
+
+            // Apply background
+            if (settings.background) {
+                document.body.style.backgroundImage = `url(${settings.background})`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundAttachment = 'fixed';
+            } else {
+                document.body.style.backgroundImage = '';
+                document.body.className = 'bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen';
+            }
+        }
+
+        // Initialize dashboard on page load
+        updateDashboard();
+        applySettings();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d5f96897b5a5b9',t:'MTc1NDg5Njg2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
