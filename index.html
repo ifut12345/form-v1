@@ -97,12 +97,12 @@
                     </button>
                 </form>
                 
-                <!-- Dashboard Button -->
+                <!-- Dashboard Link -->
                 <div class="mt-4 text-center">
-                    <button onclick="showDashboard()" 
-                            class="text-gray-600 hover:text-gray-800 font-medium transition-colors">
+                    <a href="#" onclick="showDashboard(); return false;" 
+                       class="text-blue-600 hover:text-blue-800 text-sm underline">
                         Dashboard
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -188,6 +188,8 @@
                     </div>
                 </div>
 
+
+
                 <!-- Google Sheets Configuration -->
                 <div class="mb-8">
                     <h4 class="text-lg font-medium text-gray-700 mb-4">Konfigurasi Google Sheets</h4>
@@ -268,14 +270,91 @@
         let currentFormData = {};
         let satisfactionChart = null;
         let GOOGLE_SCRIPT_URL = '';
+        let isConfigurationLocked = false;
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             loadStoredAssets();
             loadStoredData();
             setupEventListeners();
+            checkConfigurationLock();
             showForm();
         });
+
+        // Check if configuration should be locked
+        function checkConfigurationLock() {
+            const hasLogo = localStorage.getItem('schoolLogo');
+            const hasBackground = localStorage.getItem('schoolBackground');
+            const hasGoogleScript = localStorage.getItem('sheetsUrl');
+            
+            if (hasLogo && hasBackground && hasGoogleScript) {
+                isConfigurationLocked = true;
+                lockConfigurationUI();
+            }
+        }
+
+        // Lock the configuration UI
+        function lockConfigurationUI() {
+            // Disable logo upload
+            const logoUploadBtn = document.querySelector('button[onclick="document.getElementById(\'logoUpload\').click()"]');
+            const logoSaveBtn = document.querySelector('button[onclick="saveLogo()"]');
+            if (logoUploadBtn) {
+                logoUploadBtn.disabled = true;
+                logoUploadBtn.textContent = 'Logo Terkunci';
+                logoUploadBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                logoUploadBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            }
+            if (logoSaveBtn) {
+                logoSaveBtn.disabled = true;
+                logoSaveBtn.textContent = 'Terkunci';
+                logoSaveBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                logoSaveBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            }
+
+            // Disable background upload
+            const bgUploadBtn = document.querySelector('button[onclick="document.getElementById(\'backgroundUpload\').click()"]');
+            const bgSaveBtn = document.querySelector('button[onclick="saveBackground()"]');
+            if (bgUploadBtn) {
+                bgUploadBtn.disabled = true;
+                bgUploadBtn.textContent = 'Background Terkunci';
+                bgUploadBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                bgUploadBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            }
+            if (bgSaveBtn) {
+                bgSaveBtn.disabled = true;
+                bgSaveBtn.textContent = 'Terkunci';
+                bgSaveBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                bgSaveBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            }
+
+            // Disable Google Sheets configuration
+            const sheetsUrlInput = document.getElementById('sheetsUrl');
+            const sheetsSaveBtn = document.querySelector('button[onclick="saveSheetsConfig()"]');
+            if (sheetsUrlInput) {
+                sheetsUrlInput.disabled = true;
+                sheetsUrlInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+            }
+            if (sheetsSaveBtn) {
+                sheetsSaveBtn.disabled = true;
+                sheetsSaveBtn.textContent = 'Konfigurasi Terkunci';
+                sheetsSaveBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                sheetsSaveBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            }
+
+            // Disable file inputs
+            document.getElementById('logoUpload').disabled = true;
+            document.getElementById('backgroundUpload').disabled = true;
+
+            // Add locked status message
+            const settingsSection = document.querySelector('.bg-white.rounded-xl.shadow-lg.p-8.mb-8');
+            if (settingsSection && !document.getElementById('lockMessage')) {
+                const lockMessage = document.createElement('div');
+                lockMessage.id = 'lockMessage';
+                lockMessage.className = 'bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-6';
+                lockMessage.innerHTML = '<strong>🔒 Konfigurasi Terkunci:</strong> Logo, background, dan Google Sheets sudah dikonfigurasi dan tidak dapat diubah.';
+                settingsSection.insertBefore(lockMessage, settingsSection.firstChild.nextSibling);
+            }
+        }
 
         // Event Listeners
         function setupEventListeners() {
@@ -408,6 +487,12 @@
         let tempBackgroundData = null;
         
         function handleLogoUpload(e) {
+            if (isConfigurationLocked) {
+                alert('Konfigurasi sudah terkunci dan tidak dapat diubah.');
+                e.target.value = '';
+                return;
+            }
+            
             const file = e.target.files[0];
             if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
                 const reader = new FileReader();
@@ -425,6 +510,11 @@
         }
         
         function saveLogo() {
+            if (isConfigurationLocked) {
+                alert('Konfigurasi sudah terkunci dan tidak dapat diubah.');
+                return;
+            }
+            
             if (tempLogoData) {
                 // Store in localStorage for immediate use
                 localStorage.setItem('schoolLogo', tempLogoData);
@@ -438,12 +528,21 @@
                 
                 alert('Logo berhasil disimpan!');
                 tempLogoData = null;
+                
+                // Check if all configurations are complete
+                checkConfigurationLock();
             } else {
                 alert('Pilih logo terlebih dahulu.');
             }
         }
 
         function handleBackgroundUpload(e) {
+            if (isConfigurationLocked) {
+                alert('Konfigurasi sudah terkunci dan tidak dapat diubah.');
+                e.target.value = '';
+                return;
+            }
+            
             const file = e.target.files[0];
             if (file && file.size <= 5 * 1024 * 1024) { // 5MB limit
                 const reader = new FileReader();
@@ -458,6 +557,11 @@
         }
         
         function saveBackground() {
+            if (isConfigurationLocked) {
+                alert('Konfigurasi sudah terkunci dan tidak dapat diubah.');
+                return;
+            }
+            
             if (tempBackgroundData) {
                 // Store in localStorage for immediate use
                 localStorage.setItem('schoolBackground', tempBackgroundData);
@@ -471,6 +575,9 @@
                 
                 alert('Background berhasil disimpan!');
                 tempBackgroundData = null;
+                
+                // Check if all configurations are complete
+                checkConfigurationLock();
             } else {
                 alert('Pilih background terlebih dahulu.');
             }
@@ -670,11 +777,19 @@
 
         // Settings functions
         function saveSheetsConfig() {
+            if (isConfigurationLocked) {
+                alert('Konfigurasi sudah terkunci dan tidak dapat diubah.');
+                return;
+            }
+            
             const url = document.getElementById('sheetsUrl').value;
             if (url) {
                 localStorage.setItem('sheetsUrl', url);
                 GOOGLE_SCRIPT_URL = url;
                 alert('Konfigurasi Google Sheets berhasil disimpan!');
+                
+                // Check if all configurations are complete
+                checkConfigurationLock();
             } else {
                 alert('Mohon masukkan URL yang valid.');
             }
@@ -688,5 +803,5 @@
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96dc517f4700b5ba',t:'MTc1NDk2MzM4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96dc775d1472ea85',t:'MTc1NDk2NDk0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
