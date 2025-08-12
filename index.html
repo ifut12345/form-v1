@@ -34,18 +34,7 @@
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 font-sans" id="mainBody">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <h1 class="text-xl font-bold text-gray-800">SMA Katolik St. Louis 2</h1>
-                <div class="flex space-x-4">
-                    <button onclick="showForm()" class="px-4 py-2 text-blue-600 hover:text-blue-800 font-medium transition-colors">Form</button>
-                    <button onclick="showDashboard()" class="px-4 py-2 text-blue-600 hover:text-blue-800 font-medium transition-colors">Dashboard</button>
-                </div>
-            </div>
-        </div>
-    </nav>
+
 
     <!-- Password Modal -->
     <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
@@ -72,15 +61,14 @@
     <!-- Form Section -->
     <div id="formSection" class="container mx-auto px-4 py-8">
         <div class="max-w-md mx-auto">
-            <!-- Logo Display -->
-            <div class="text-center mb-6">
-                <img id="logoDisplay" src="" alt="" class="logo-preview mx-auto mb-4 hidden">
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">SMA Katolik St. Louis 2</h2>
-                <p class="text-gray-600">Form Pendaftaran Siswa</p>
-            </div>
-
             <!-- Main Form Card -->
             <div class="bg-white rounded-xl shadow-lg p-8 slide-up">
+                <!-- Logo Display -->
+                <div class="text-center mb-6">
+                    <img id="logoDisplay" src="" alt="" class="logo-preview mx-auto mb-4 hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">SMA Katolik St. Louis 2</h2>
+                </div>
+                
                 <form id="studentForm" class="space-y-6">
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
@@ -105,9 +93,17 @@
 
                     <button type="submit" 
                             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 transform hover:scale-105">
-                        Kirim Pendaftaran
+                        Submit
                     </button>
                 </form>
+                
+                <!-- Dashboard Button -->
+                <div class="mt-4 text-center">
+                    <button onclick="showDashboard()" 
+                            class="text-gray-600 hover:text-gray-800 font-medium transition-colors">
+                        Dashboard
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -115,7 +111,13 @@
     <!-- Dashboard Section -->
     <div id="dashboardSection" class="container mx-auto px-4 py-8 hidden">
         <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Dashboard Data Pendaftaran</h2>
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Dashboard Data Pendaftaran</h2>
+                <button onclick="showForm()" 
+                        class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    Exit
+                </button>
+            </div>
             
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -150,10 +152,16 @@
                     <h4 class="text-lg font-medium text-gray-700 mb-4">Logo Sekolah</h4>
                     <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                         <input type="file" id="logoUpload" accept="image/*" class="hidden">
-                        <button onclick="document.getElementById('logoUpload').click()" 
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
-                            Pilih Logo
-                        </button>
+                        <div class="space-y-4">
+                            <button onclick="document.getElementById('logoUpload').click()" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
+                                Pilih Logo
+                            </button>
+                            <button onclick="saveLogo()" 
+                                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors ml-4">
+                                Save
+                            </button>
+                        </div>
                         <p class="text-gray-500 mt-2">Format: JPG, PNG (Maks. 2MB)</p>
                         <div id="logoPreview" class="mt-4 hidden">
                             <img id="logoPreviewImg" src="" alt="Logo Preview" class="logo-preview mx-auto">
@@ -166,10 +174,16 @@
                     <h4 class="text-lg font-medium text-gray-700 mb-4">Background</h4>
                     <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                         <input type="file" id="backgroundUpload" accept="image/*" class="hidden">
-                        <button onclick="document.getElementById('backgroundUpload').click()" 
-                                class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
-                            Pilih Background
-                        </button>
+                        <div class="space-y-4">
+                            <button onclick="document.getElementById('backgroundUpload').click()" 
+                                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
+                                Pilih Background
+                            </button>
+                            <button onclick="saveBackground()" 
+                                    class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors ml-4">
+                                Save
+                            </button>
+                        </div>
                         <p class="text-gray-500 mt-2">Format: JPG, PNG (Maks. 5MB)</p>
                     </div>
                 </div>
@@ -390,30 +404,42 @@
         }
 
         // Asset management
+        let tempLogoData = null;
+        let tempBackgroundData = null;
+        
         function handleLogoUpload(e) {
             const file = e.target.files[0];
             if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const logoData = e.target.result;
+                    tempLogoData = e.target.result;
                     
-                    // Store in localStorage for immediate use
-                    localStorage.setItem('schoolLogo', logoData);
-                    
-                    // Send to Google Sheets for permanent storage
-                    sendAssetToGoogleSheets('logo', logoData);
-                    
-                    // Update preview
-                    document.getElementById('logoPreviewImg').src = logoData;
+                    // Update preview only
+                    document.getElementById('logoPreviewImg').src = tempLogoData;
                     document.getElementById('logoPreview').classList.remove('hidden');
-                    
-                    // Update main logo
-                    document.getElementById('logoDisplay').src = logoData;
-                    document.getElementById('logoDisplay').classList.remove('hidden');
                 };
                 reader.readAsDataURL(file);
             } else {
                 alert('File terlalu besar. Maksimal 2MB.');
+            }
+        }
+        
+        function saveLogo() {
+            if (tempLogoData) {
+                // Store in localStorage for immediate use
+                localStorage.setItem('schoolLogo', tempLogoData);
+                
+                // Send to Google Sheets for permanent storage
+                sendAssetToGoogleSheets('logo', tempLogoData);
+                
+                // Update main logo
+                document.getElementById('logoDisplay').src = tempLogoData;
+                document.getElementById('logoDisplay').classList.remove('hidden');
+                
+                alert('Logo berhasil disimpan!');
+                tempLogoData = null;
+            } else {
+                alert('Pilih logo terlebih dahulu.');
             }
         }
 
@@ -422,21 +448,31 @@
             if (file && file.size <= 5 * 1024 * 1024) { // 5MB limit
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const bgData = e.target.result;
-                    
-                    // Store in localStorage for immediate use
-                    localStorage.setItem('schoolBackground', bgData);
-                    
-                    // Send to Google Sheets for permanent storage
-                    sendAssetToGoogleSheets('background', bgData);
-                    
-                    // Apply background
-                    document.getElementById('mainBody').style.backgroundImage = `url(${bgData})`;
-                    document.getElementById('mainBody').classList.add('bg-overlay');
+                    tempBackgroundData = e.target.result;
+                    alert('Background dipilih. Klik Save untuk menyimpan.');
                 };
                 reader.readAsDataURL(file);
             } else {
                 alert('File terlalu besar. Maksimal 5MB.');
+            }
+        }
+        
+        function saveBackground() {
+            if (tempBackgroundData) {
+                // Store in localStorage for immediate use
+                localStorage.setItem('schoolBackground', tempBackgroundData);
+                
+                // Send to Google Sheets for permanent storage
+                sendAssetToGoogleSheets('background', tempBackgroundData);
+                
+                // Apply background
+                document.getElementById('mainBody').style.backgroundImage = `url(${tempBackgroundData})`;
+                document.getElementById('mainBody').classList.add('bg-overlay');
+                
+                alert('Background berhasil disimpan!');
+                tempBackgroundData = null;
+            } else {
+                alert('Pilih background terlebih dahulu.');
             }
         }
 
@@ -652,5 +688,5 @@
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96dc3434628fb5ba',t:'MTc1NDk2MjE4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96dc517f4700b5ba',t:'MTc1NDk2MzM4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
